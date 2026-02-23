@@ -95,7 +95,7 @@ pub async fn start_server(
     // Mapa inverso para buscar por IP:Puerto
     let mut peer_to_conn_id: HashMap<String, quiche::ConnectionId<'static>> = HashMap::new();
 
-    let handle = tokio::spawn(async move {
+    let _handle = tokio::spawn(async move {
         loop {
             tokio::select! {
                 // Recibir paquetes UDP

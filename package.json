@@ -21,7 +21,9 @@
   "files": [
     "index.d.ts",
     "index.js",
-    "browser.js"
+    "browser.js",
+    "prebuilt/",
+    "*.node"
   ],
   "napi": {
     "binaryName": ".",
@@ -55,7 +57,9 @@
     "test": "ava",
     "preversion": "napi build --platform && git add .",
     "version": "napi version",
-    "prepare": "husky"
+    "prepare": "husky",
+    "proxy": "node examples/proxy/proxy-server.js",
+    "serve-react": "node examples/react/server.js"
   },
   "devDependencies": {
     "@emnapi/core": "^1.5.0",
@@ -107,5 +111,9 @@
     "singleQuote": true,
     "arrowParens": "always"
   },
-  "packageManager": "yarn@4.12.0"
+  "packageManager": "yarn@4.12.0",
+  "dependencies": {
+    "selfsigned": "^2.4.1",
+    "ws": "^8.19.0"
+  }
 }

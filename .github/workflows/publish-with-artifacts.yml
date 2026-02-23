@@ -1,0 +1,130 @@
+name: Build & Publish package with prebuilt binaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-matrix:
+    name: Build artifacts
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Install NASM (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y nasm
+
+      - name: Install NASM (macOS)
+        if: runner.os == 'macOS'
+        run: brew install nasm
+
+      - name: Install NASM (Windows)
+        if: runner.os == 'Windows'
+        run: choco install nasm -y
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build napi artifacts
+        run: npm run artifacts
+
+      - name: Package artifacts
+        run: |
+          set -e
+          mkdir -p package-artifacts
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            powershell -Command "if(Test-Path artifacts){ Compress-Archive -Path artifacts\* -DestinationPath package-artifact-windows.zip }"
+            mv package-artifact-windows.zip package-artifacts/
+          else
+            zip -r package-artifact-${{ matrix.os }}.zip artifacts || true
+            mv package-artifact-${{ matrix.os }}.zip package-artifacts/
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qore-artifact-${{ matrix.os }}
+          path: package-artifacts
+
+  package-and-publish:
+    name: Package and publish
+    needs: build-matrix
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: qore-artifact-ubuntu-latest
+          path: ./downloads/ubuntu
+
+      - name: Download mac artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: qore-artifact-macos-latest
+          path: ./downloads/macos
+
+      - name: Download windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: qore-artifact-windows-latest
+          path: ./downloads/windows
+
+      - name: Prepare prebuilt folder
+        run: |
+          set -e
+          mkdir -p prebuilt/linux prebuilt/macos prebuilt/windows
+          for f in downloads/*/package-artifacts/*.zip; do
+            echo "Extracting $f"
+            unzip -o "$f" -d tmp_extract || true
+          done
+          # find binaries and place them into prebuilt/*
+          find tmp_extract -type f -name '*.node' -print0 | while IFS= read -r -d '' file; do
+            echo "Found binary: $file"
+            filename=$(basename "$file")
+            case "$file" in
+              *windows*) cp "$file" "prebuilt/windows/$filename" || true ;;
+              *macos*) cp "$file" "prebuilt/macos/$filename" || true ;;
+              *ubuntu*|*linux*) cp "$file" "prebuilt/linux/$filename" || true ;;
+              *) cp "$file" "prebuilt/$filename" || true ;;
+            esac
+          done || true
+
+      - name: List prebuilt
+        run: ls -R prebuilt || true
+
+      - name: Setup npm auth
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Include prebuilt in package and publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -e
+          # Copy prebuilt into package root so they are included by 'files' in package.json
+          cp -r prebuilt .
+          ls -R .
+          npm ci --only=production || true
+          # Pack and publish
+          npm publish --access public
