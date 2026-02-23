@@ -128,3 +128,7 @@ Cargo.lock
 !.yarn/sdks
 !.yarn/versions
 /npm
+ 
+# Local TLS certs
+cert.key
+cert.crt
