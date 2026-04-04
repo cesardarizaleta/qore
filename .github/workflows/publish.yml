@@ -61,6 +61,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v') # Requerirá que crees un un tag en git (ej. git tag v1.0.0 && git push --tags)
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -88,3 +91,4 @@ jobs:
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
