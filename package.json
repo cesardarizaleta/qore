@@ -1,6 +1,6 @@
 {
   "name": "qore-quic",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "High-performance Express-style API framework over QUIC protocol. Built with Rust + Node.js for ultra-fast communication.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
