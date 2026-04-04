@@ -40,7 +40,8 @@ jobs:
       - name: Bump
         id: bump
         run: |
-          NEW_VER=$(npm version patch --force -m "chore(release): %s")
+          npm version patch --force -m "chore(release): %s"
+          NEW_VER=v$(node -p "require('./package.json').version")
           git push origin main
           git push origin $NEW_VER
           echo "ver=$NEW_VER" >> $GITHUB_OUTPUT
