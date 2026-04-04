@@ -576,5 +576,7 @@ if (!nativeBinding) {
 }
 
 module.exports = nativeBinding
+module.exports.QoreClientHandle = nativeBinding.QoreClientHandle
 module.exports.QoreServerHandle = nativeBinding.QoreServerHandle
+module.exports.connectToServer = nativeBinding.connectToServer
 module.exports.startServer = nativeBinding.startServer

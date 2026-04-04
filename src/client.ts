@@ -1,73 +1,183 @@
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'events';
+import { connectToServer, QoreEvent, QoreClientHandle } from '../index.js';
 
-type Incoming = { type: string; peer?: string; streamId?: number; data?: string; peers?: string[] }
+// ── Types ────────────────────────────────────────────────────────────
+
+interface PendingRequest {
+  resolve: (value: any) => void;
+  reject: (reason: any) => void;
+  chunks: Buffer[];
+  timeout: ReturnType<typeof setTimeout>;
+}
+
+// ── Frame helpers ────────────────────────────────────────────────────
+
+function buildFrame(route: string, payload: Buffer): Buffer {
+  const routeBuf = Buffer.from(route, 'utf-8');
+  const header = Buffer.alloc(2);
+  header.writeUInt16BE(routeBuf.length, 0);
+  return Buffer.concat([header, routeBuf, payload]);
+}
+
+function parseFrame(raw: Buffer): { route: string; payload: Buffer } {
+  if (raw.length < 2) return { route: '/', payload: raw };
+  const routeLen = raw.readUInt16BE(0);
+  if (raw.length < 2 + routeLen) return { route: '/', payload: raw };
+  const route = raw.subarray(2, 2 + routeLen).toString('utf-8');
+  const payload = raw.subarray(2 + routeLen);
+  return { route, payload };
+}
+
+// ── QoreClient ───────────────────────────────────────────────────────
 
 export class QoreClient extends EventEmitter {
-  ws: any
-  url: string
+  private handle: QoreClientHandle | null = null;
+  private connected: boolean = false;
+  private nextStreamId: number = 0; // client-initiated bidi: 0, 4, 8, ...
+  private pending: Map<number, PendingRequest> = new Map();
+  private requestTimeout: number;
 
-  constructor(url: string) {
-    super()
-    this.url = url
-    this.ws = null
+  /**
+   * @param timeout  Request timeout in ms (default 10 000)
+   */
+  constructor(timeout: number = 10_000) {
+    super();
+    this.requestTimeout = timeout;
   }
 
-  async connect(): Promise<void> {
-    let WebSocketImpl: any = (globalThis as any).WebSocket
-    if (!WebSocketImpl) {
+  // ── Connect ────────────────────────────────────────
+
+  /**
+   * Open a QUIC connection to a Qore server.
+   * Resolves when the handshake is complete.
+   */
+  async connect(host: string, port: number): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
       try {
-        WebSocketImpl = require('ws')
-      } catch (e) {
-        throw new Error("No WebSocket available. In Node.js install 'ws' or provide a global WebSocket implementation")
+        this.handle = await connectToServer(host, port, (err: Error | null, event: QoreEvent) => {
+          if (err) { this.emit('error', err); return; }
+          if (!event) return;
+
+          switch (event.eventType) {
+            case 'connection':
+              this.connected = true;
+              this.emit('connection');
+              resolve();
+              break;
+
+            case 'data': {
+              const buffer = event.data
+                ? Buffer.from(event.data.buffer, event.data.byteOffset, event.data.byteLength)
+                : Buffer.alloc(0);
+
+              const streamId = event.streamId || 0;
+              const req = this.pending.get(streamId);
+
+              if (req) {
+                // Accumulate response chunks
+                req.chunks.push(buffer);
+                const full = Buffer.concat(req.chunks);
+
+                // Try to parse the response frame
+                if (full.length >= 2) {
+                  const routeLen = full.readUInt16BE(0);
+                  if (full.length >= 2 + routeLen) {
+                    const { payload } = parseFrame(full);
+                    clearTimeout(req.timeout);
+                    this.pending.delete(streamId);
+                    // Try JSON, fallback to raw buffer
+                    try {
+                      req.resolve(JSON.parse(payload.toString()));
+                    } catch {
+                      req.resolve(payload);
+                    }
+                  }
+                }
+              } else {
+                this.emit('data', streamId, buffer);
+              }
+              break;
+            }
+
+            case 'closed':
+              this.connected = false;
+              this.emit('closed');
+              // Reject all pending requests
+              for (const [id, req] of this.pending) {
+                clearTimeout(req.timeout);
+                req.reject(new Error('Connection closed'));
+                this.pending.delete(id);
+              }
+              break;
+          }
+        });
+      } catch (error) {
+        reject(error);
       }
+    });
+  }
+
+  // ── Send request ───────────────────────────────────
+
+  /**
+   * Send a request to a route and receive the response.
+   *
+   * @param route  Route path (e.g. `/echo`)
+   * @param data   Optional payload (object → JSON, string, Buffer)
+   * @returns      Parsed response (JSON object or Buffer)
+   */
+  async send(route: string, data?: any): Promise<any> {
+    if (!this.handle || !this.connected) {
+      throw new Error('Not connected. Call connect() first.');
     }
 
-    this.ws = new WebSocketImpl(this.url)
+    const streamId = this.nextStreamId;
+    this.nextStreamId += 4; // QUIC client-initiated bidi streams
 
-    this.ws.onopen = () => this.emit('open')
-    this.ws.onclose = () => this.emit('close')
-    this.ws.onerror = (err: any) => this.emit('error', err)
-    this.ws.onmessage = (ev: any) => {
-      const raw = ev.data ?? ev
-      const text = typeof raw === 'string' ? raw : raw.toString()
-      try {
-        const msg: Incoming = JSON.parse(text)
-        if (msg.type === 'data' && msg.peer && msg.data) {
-          const bin = (typeof Buffer !== 'undefined' && Buffer.from)
-            ? Buffer.from(msg.data, 'base64')
-            : Uint8Array.from(atob(msg.data), c => c.charCodeAt(0))
-          this.emit('data', msg.peer, msg.streamId ?? 0, bin)
-        } else if (msg.type === 'peers') {
-          this.emit('peers', msg.peers)
-        } else if (msg.type === 'connect') {
-          this.emit('connect', msg.peer)
-        } else {
-          this.emit('message', msg)
-        }
-      } catch (e) {
-        this.emit('message', text)
-      }
+    // Serialize payload
+    let payload: Buffer;
+    if (data === undefined || data === null) {
+      payload = Buffer.alloc(0);
+    } else if (Buffer.isBuffer(data)) {
+      payload = data;
+    } else if (typeof data === 'object') {
+      payload = Buffer.from(JSON.stringify(data));
+    } else {
+      payload = Buffer.from(String(data));
     }
+
+    const frame = buildFrame(route, payload);
 
     return new Promise((resolve, reject) => {
-      this.once('open', () => resolve())
-      this.once('error', (err: any) => reject(err))
-    })
+      const timeout = setTimeout(() => {
+        if (this.pending.has(streamId)) {
+          this.pending.delete(streamId);
+          reject(new Error(`Request to ${route} timed out after ${this.requestTimeout}ms`));
+        }
+      }, this.requestTimeout);
+
+      this.pending.set(streamId, { resolve, reject, chunks: [], timeout });
+
+      this.handle!.sendOnStream(streamId, frame, true).catch((err: Error) => {
+        clearTimeout(timeout);
+        this.pending.delete(streamId);
+        reject(err);
+      });
+    });
   }
 
-  send(peer: string, streamId: number, data: Uint8Array | Buffer) {
-    if (!this.ws) throw new Error('Not connected')
-    const openState = this.ws.OPEN ?? 1
-    if (this.ws.readyState !== openState) throw new Error('WebSocket not open')
-    const base64 = (typeof Buffer !== 'undefined' && Buffer.from)
-      ? Buffer.from(data).toString('base64')
-      : btoa(String.fromCharCode(...Array.from(data)))
-    this.ws.send(JSON.stringify({ type: 'send', peer, streamId, data: base64 }))
-  }
+  // ── Close ──────────────────────────────────────────
 
-  close() {
-    if (this.ws) this.ws.close()
+  /** Close the connection gracefully */
+  close(): void {
+    this.connected = false;
+    for (const [id, req] of this.pending) {
+      clearTimeout(req.timeout);
+      req.reject(new Error('Client closed'));
+      this.pending.delete(id);
+    }
+    this.handle = null;
   }
 }
 
-export default QoreClient
+export default QoreClient;
