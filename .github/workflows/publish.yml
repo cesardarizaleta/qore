@@ -87,7 +87,6 @@ jobs:
 
       - name: Publish to NPM
         run: |
-          npm config set provenance true
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
