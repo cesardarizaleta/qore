@@ -1,5 +1,5 @@
 {
-  "name": "@cesardarizaleta/qore",
+  "name": "qore-quic",
   "version": "1.0.0",
   "description": "High-performance Express-style API framework over QUIC protocol. Built with Rust + Node.js for ultra-fast communication.",
   "main": "dist/index.js",
@@ -26,7 +26,7 @@
     "*.node"
   ],
   "napi": {
-    "binaryName": "qore",
+    "binaryName": "qore-quic",
     "targets": [
       "x86_64-pc-windows-msvc",
       "x86_64-apple-darwin",

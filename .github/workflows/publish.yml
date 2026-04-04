@@ -2,7 +2,7 @@ name: Build & Publish NAPI-RS
 
 env:
   DEBUG: napi:*
-  APP_NAME: qore
+  APP_NAME: qore-quic
   MACOSX_DEPLOYMENT_TARGET: '10.13'
 
 on:
