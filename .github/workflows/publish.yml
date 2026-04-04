@@ -1,4 +1,4 @@
-name: Build & Publish NAPI-RS
+name: Automate CD to NPM
 
 env:
   DEBUG: napi:*
@@ -9,11 +9,41 @@ on:
   push:
     branches:
       - main
-    tags:
-      - 'v*'
 
 jobs:
+  bump-version:
+    if: "!startsWith(github.event.head_commit.message, 'chore(release)')"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      new_version: ${{ steps.bump.outputs.ver }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          
+      - name: Config Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+      - name: Bump
+        id: bump
+        run: |
+          NEW_VER=$(npm version patch -m "chore(release): %s")
+          git push origin main
+          git push origin $NEW_VER
+          echo "ver=$NEW_VER" >> $GITHUB_OUTPUT
+
   build:
+    needs: bump-version
     strategy:
       fail-fast: false
       matrix:
@@ -32,6 +62,8 @@ jobs:
     runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.bump-version.outputs.new_version }}
 
       - name: Setup node
         uses: actions/setup-node@v4
@@ -53,19 +85,20 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bindings-${{ matrix.settings.target }}
-          path: ${{ env.APP_NAME }}.*.node
+          path: "*.node"
           if-no-files-found: error
 
   publish:
     name: Publish
-    needs: build
+    needs: [bump-version, build]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v') # Requerirá que crees un un tag en git (ej. git tag v1.0.0 && git push --tags)
     permissions:
       contents: write
       id-token: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.bump-version.outputs.new_version }}
 
       - name: Setup node
         uses: actions/setup-node@v4
