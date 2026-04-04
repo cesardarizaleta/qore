@@ -1,5 +1,5 @@
 {
-  "name": "qore",
+  "name": "@cesardarizaleta/qore",
   "version": "1.0.0",
   "description": "High-performance Express-style API framework over QUIC protocol. Built with Rust + Node.js for ultra-fast communication.",
   "main": "dist/index.js",
