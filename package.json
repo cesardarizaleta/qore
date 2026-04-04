@@ -40,8 +40,8 @@
     "node": ">= 18.0.0"
   },
   "scripts": {
-    "build": "napi build --platform --release && node scripts/fix-types.js && tsc",
-    "build:debug": "napi build --platform && node scripts/fix-types.js && tsc",
+    "build": "napi build --platform --release && tsc",
+    "build:debug": "napi build --platform && tsc",
     "test:server": "node example.js",
     "test:client": "node example-client.js",
     "format": "prettier . -w",
