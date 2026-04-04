@@ -1,5 +1,5 @@
 {
-  "name": "qore-protocol",
+  "name": "qore",
   "version": "1.0.0",
   "description": "High-performance Express-style API framework over QUIC protocol. Built with Rust + Node.js for ultra-fast communication.",
   "main": "dist/index.js",
@@ -40,8 +40,8 @@
     "node": ">= 18.0.0"
   },
   "scripts": {
-    "build": "napi build --platform --release && tsc",
-    "build:debug": "napi build --platform && tsc",
+    "build": "napi build --platform --release && node scripts/fix-types.js && tsc",
+    "build:debug": "napi build --platform && node scripts/fix-types.js && tsc",
     "test:server": "node example.js",
     "test:client": "node example-client.js",
     "format": "prettier . -w",

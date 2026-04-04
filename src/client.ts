@@ -11,21 +11,14 @@ interface PendingRequest {
 }
 
 // ── Frame helpers ────────────────────────────────────────────────────
+// Frame format: [2B route-length] [4B payload-length] [route UTF-8] [payload]
 
 function buildFrame(route: string, payload: Buffer): Buffer {
   const routeBuf = Buffer.from(route, 'utf-8');
-  const header = Buffer.alloc(2);
+  const header = Buffer.alloc(6);
   header.writeUInt16BE(routeBuf.length, 0);
+  header.writeUInt32BE(payload.length, 2);
   return Buffer.concat([header, routeBuf, payload]);
-}
-
-function parseFrame(raw: Buffer): { route: string; payload: Buffer } {
-  if (raw.length < 2) return { route: '/', payload: raw };
-  const routeLen = raw.readUInt16BE(0);
-  if (raw.length < 2 + routeLen) return { route: '/', payload: raw };
-  const route = raw.subarray(2, 2 + routeLen).toString('utf-8');
-  const payload = raw.subarray(2 + routeLen);
-  return { route, payload };
 }
 
 // ── QoreClient ───────────────────────────────────────────────────────
@@ -79,10 +72,13 @@ export class QoreClient extends EventEmitter {
                 const full = Buffer.concat(req.chunks);
 
                 // Try to parse the response frame
-                if (full.length >= 2) {
+                if (full.length >= 6) {
                   const routeLen = full.readUInt16BE(0);
-                  if (full.length >= 2 + routeLen) {
-                    const { payload } = parseFrame(full);
+                  const payloadLen = full.readUInt32BE(2);
+                  const totalFrameLen = 6 + routeLen + payloadLen;
+
+                  if (full.length >= totalFrameLen) {
+                    const payload = full.subarray(6 + routeLen, totalFrameLen);
                     clearTimeout(req.timeout);
                     this.pending.delete(streamId);
                     // Try JSON, fallback to raw buffer

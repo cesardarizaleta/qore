@@ -91,8 +91,14 @@ pub async fn start_server(
     config.set_initial_max_streams_uni(100);
     config.set_disable_active_migration(true);
 
-    let addr: SocketAddr = format!("0.0.0.0:{}", port).parse().unwrap();
-    let socket = UdpSocket::bind(addr).await.map_err(|e| {
+    let addr: SocketAddr = format!("0.0.0.0:{}", port).parse().map_err(|e| {
+        Error::new(
+            Status::InvalidArg,
+            format!("Invalid port {}: {}", port, e),
+        )
+    })?;
+
+    let socket = tokio::net::UdpSocket::bind(addr).await.map_err(|e| {
         Error::new(
             Status::GenericFailure,
             format!("Failed to bind socket: {}", e),
@@ -110,9 +116,44 @@ pub async fn start_server(
             HashMap::new();
         let mut peer_to_conn_id: HashMap<String, quiche::ConnectionId<'static>> = HashMap::new();
         let mut conn_counter: u64 = 0;
+        let mut timer = tokio::time::interval(std::time::Duration::from_millis(50));
 
         loop {
             tokio::select! {
+                _ = timer.tick() => {
+                    let mut closed_ids = Vec::new();
+                    for (conn_id, conn) in connections.iter_mut() {
+                        conn.on_timeout();
+                        loop {
+                            let (write, send_info) = match conn.send(&mut out) {
+                                Ok(v) => v,
+                                Err(quiche::Error::Done) => break,
+                                Err(_) => break,
+                            };
+                            let _ = socket.send_to(&out[..write], send_info.to).await;
+                        }
+                        if conn.is_closed() {
+                            closed_ids.push(conn_id.clone());
+                        }
+                    }
+                    for id in closed_ids {
+                        let peer_opt = peer_to_conn_id.iter().find(|(_, val)| *val == &id).map(|(k, _)| k.clone());
+                        if let Some(peer) = peer_opt {
+                            callback.call(
+                                Ok(QoreEvent {
+                                    event_type: "closed".to_string(),
+                                    peer: peer.clone(),
+                                    stream_id: None,
+                                    data: None,
+                                }),
+                                ThreadsafeFunctionCallMode::NonBlocking,
+                            );
+                            peer_to_conn_id.remove(&peer);
+                        }
+                        connections.remove(&id);
+                    }
+                }
+
                 recv_result = socket.recv_from(&mut buf) => {
                     let (len, src) = match recv_result {
                         Ok(v) => v,
@@ -384,9 +425,34 @@ pub async fn connect_to_server(
         let mut buf = [0; 65535];
         let mut out = [0; MAX_DATAGRAM_SIZE];
         let mut established_notified = false;
+        let mut timer = tokio::time::interval(std::time::Duration::from_millis(50));
 
         loop {
             tokio::select! {
+                _ = timer.tick() => {
+                    conn.on_timeout();
+                    loop {
+                        let (write, send_info) = match conn.send(&mut out) {
+                            Ok(v) => v,
+                            Err(quiche::Error::Done) => break,
+                            Err(_) => break,
+                        };
+                        let _ = socket.send_to(&out[..write], send_info.to).await;
+                    }
+                    if conn.is_closed() {
+                        callback.call(
+                            Ok(QoreEvent {
+                                event_type: "closed".to_string(),
+                                peer: peer_addr.to_string(),
+                                stream_id: None,
+                                data: None,
+                            }),
+                            ThreadsafeFunctionCallMode::NonBlocking,
+                        );
+                        break;
+                    }
+                }
+
                 recv_result = socket.recv_from(&mut buf) => {
                     let (len, src) = match recv_result {
                         Ok(v) => v,
@@ -501,12 +567,11 @@ pub async fn connect_to_server(
     Ok(QoreClientHandle { tx })
 }
 
-/// Simple random byte generator (no external dependency needed)
+/// Cryptographically secure random byte generator
 fn rand_byte() -> u8 {
-    use std::time::SystemTime;
-    let t = SystemTime::now()
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .unwrap_or_default()
-        .subsec_nanos();
-    (t % 256) as u8
+    use ring::rand::SecureRandom;
+    let rng = ring::rand::SystemRandom::new();
+    let mut b = [0u8; 1];
+    rng.fill(&mut b).unwrap_or_default();
+    b[0]
 }

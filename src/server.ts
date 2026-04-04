@@ -34,21 +34,13 @@ export interface QoreResponse {
 export type RouteHandler = (req: QoreRequest, res: QoreResponse) => void;
 
 // ── Frame helpers ────────────────────────────────────────────────────
-// Frame format: [2B route-length BE][route UTF-8][payload]
-
-function parseFrame(raw: Buffer): { route: string; payload: Buffer } {
-  if (raw.length < 2) return { route: '/', payload: raw };
-  const routeLen = raw.readUInt16BE(0);
-  if (raw.length < 2 + routeLen) return { route: '/', payload: raw };
-  const route = raw.subarray(2, 2 + routeLen).toString('utf-8');
-  const payload = raw.subarray(2 + routeLen);
-  return { route, payload };
-}
+// Frame format: [2B route-length] [4B payload-length] [route UTF-8] [payload]
 
 function buildFrame(route: string, payload: Buffer): Buffer {
   const routeBuf = Buffer.from(route, 'utf-8');
-  const header = Buffer.alloc(2);
+  const header = Buffer.alloc(6);
   header.writeUInt16BE(routeBuf.length, 0);
+  header.writeUInt32BE(payload.length, 2);
   return Buffer.concat([header, routeBuf, payload]);
 }
 
@@ -59,6 +51,7 @@ export class Qore extends EventEmitter {
   private isRunning: boolean = false;
   private handle: QoreServerHandle | null = null;
   private routes: Map<string, RouteHandler> = new Map();
+  private streamBuffers: Map<number, Buffer> = new Map();
 
   private connectionHandler?: (info: { peer: string }) => void;
   private closedHandler?: (info: { peer: string }) => void;
@@ -137,11 +130,33 @@ export class Qore extends EventEmitter {
               ? Buffer.from(event.data.buffer, event.data.byteOffset, event.data.byteLength)
               : Buffer.alloc(0);
 
-            const { route, payload } = parseFrame(rawBuffer);
+            const streamId = event.streamId || 0;
+            let streamBuf = this.streamBuffers.get(streamId) || Buffer.alloc(0);
+            streamBuf = Buffer.concat([streamBuf, rawBuffer]);
+
+            if (streamBuf.length < 6) {
+              this.streamBuffers.set(streamId, streamBuf);
+              break;
+            }
+
+            const routeLen = streamBuf.readUInt16BE(0);
+            const payloadLen = streamBuf.readUInt32BE(2);
+            const totalFrameLen = 6 + routeLen + payloadLen;
+
+            if (streamBuf.length < totalFrameLen) {
+              this.streamBuffers.set(streamId, streamBuf);
+              break;
+            }
+
+            // Frame is complete
+            this.streamBuffers.delete(streamId);
+            
+            const route = streamBuf.subarray(6, 6 + routeLen).toString('utf-8');
+            const payload = streamBuf.subarray(6 + routeLen, totalFrameLen);
 
             const req: QoreRequest = {
               peer: event.peer,
-              streamId: event.streamId || 0,
+              streamId,
               route,
               body: payload,
               json: () => {
@@ -184,6 +199,7 @@ export class Qore extends EventEmitter {
           case 'closed':
             if (this.closedHandler) this.closedHandler({ peer: event.peer });
             this.emit('closed', event.peer);
+            this.streamBuffers.clear(); // Safe clean up on full peer close
             break;
 
           default:
