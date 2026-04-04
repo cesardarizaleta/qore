@@ -26,7 +26,7 @@
     "*.node"
   ],
   "napi": {
-    "binaryName": ".",
+    "binaryName": "qore",
     "targets": [
       "x86_64-pc-windows-msvc",
       "x86_64-apple-darwin",
