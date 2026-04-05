@@ -144,7 +144,7 @@ jobs:
           ls -la *.node
 
       - name: Create platform sub-packages
-        run: npx napi prepublish -t npm --skip-gh-release
+        run: npx napi prepublish -t npm
 
       - name: Publish platform sub-packages
         run: |
