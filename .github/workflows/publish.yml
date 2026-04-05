@@ -59,6 +59,7 @@ jobs:
 
           # Clean up stale tag if it exists (from a failed prior run)
           git push origin ":refs/tags/v${NEW_VER}" 2>/dev/null || true
+          git tag -d "v${NEW_VER}" 2>/dev/null || true
 
           # Commit, tag, and push
           git add -A
