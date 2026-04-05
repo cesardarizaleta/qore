@@ -6,12 +6,12 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cesardarizaleta/qore"
+    "url": "https://github.com/cesardarizaleta/qore-quic"
   },
   "license": "MIT",
   "keywords": [
     "quic",
-    "qore",
+    "qore-quic",
     "express",
     "rust",
     "napi-rs",

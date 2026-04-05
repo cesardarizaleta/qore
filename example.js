@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  Qore Server — Example with Express-style routes
+//  Qore-QUIC Server — Example with Express-style routes
 // ─────────────────────────────────────────────────────────────
 const { Qore } = require('./dist/index.js');
 
@@ -44,6 +44,6 @@ app.onClosed(({ peer }) => {
 // ── Start ────────────────────────────────────────────────────
 
 app.listen(4433, () => {
-  console.log('🚀 Qore server running on UDP port 4433');
+  console.log('🚀 Qore-QUIC server running on UDP port 4433');
   console.log('   Routes: /echo, /hello, /users');
 });

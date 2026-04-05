@@ -79,7 +79,7 @@ pub async fn start_server(
         )
     })?;
 
-    config.set_application_protos(&[b"qore"]).unwrap();
+    config.set_application_protos(&[b"qore-quic"]).unwrap();
     config.set_max_idle_timeout(30000);
     config.set_max_recv_udp_payload_size(MAX_DATAGRAM_SIZE);
     config.set_max_send_udp_payload_size(MAX_DATAGRAM_SIZE);
@@ -360,7 +360,7 @@ pub async fn connect_to_server(
     // Skip certificate verification for development
     config.verify_peer(false);
 
-    config.set_application_protos(&[b"qore"]).unwrap();
+    config.set_application_protos(&[b"qore-quic"]).unwrap();
     config.set_max_idle_timeout(30000);
     config.set_max_recv_udp_payload_size(MAX_DATAGRAM_SIZE);
     config.set_max_send_udp_payload_size(MAX_DATAGRAM_SIZE);

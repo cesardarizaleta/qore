@@ -1,6 +1,6 @@
-# Qore Protocol
+# Qore-QUIC Protocol
 
-**Qore** is a high-performance Node.js framework for building real-time APIs that communicate over the **QUIC protocol** instead of HTTP. Define Express-style routes — data travels at UDP speed with built-in encryption.
+**Qore-QUIC** is a high-performance Node.js framework for building real-time APIs that communicate over the **QUIC protocol** instead of HTTP. Define Express-style routes — data travels at UDP speed with built-in encryption.
 
 The core is written in **Rust** (using Cloudflare's `quiche` library) and bridged to Node.js via **NAPI-RS**, giving you native performance with zero-copy memory.
 
@@ -24,8 +24,8 @@ The core is written in **Rust** (using Cloudflare's `quiche` library) and bridge
 ## Installation
 
 ```bash
-git clone https://github.com/cesardarizaleta/qore.git
-cd qore
+git clone https://github.com/cesardarizaleta/qore-quic.git
+cd qore-quic
 npm install
 npm run build
 ```
@@ -37,7 +37,7 @@ npm run build
 Create a file `server.js`:
 
 ```javascript
-const { Qore } = require('qore-protocol');
+const { Qore } = require('qore-quic');
 
 const app = new Qore();
 
@@ -67,7 +67,7 @@ app.onClosed(({ peer }) => console.log(`Disconnected: ${peer}`));
 
 // Start listening (certs auto-generated for dev!)
 app.listen(4433, () => {
-  console.log('🚀 Qore server running on port 4433');
+  console.log('🚀 Qore-QUIC server running on port 4433');
 });
 ```
 
@@ -93,7 +93,7 @@ const app = new Qore({
 Create a file `client.js`:
 
 ```javascript
-const { QoreClient } = require('qore-protocol');
+const { QoreClient } = require('qore-quic');
 
 async function main() {
   const client = new QoreClient();
@@ -106,9 +106,9 @@ async function main() {
   console.log('Echo:', echo);
   // → { echo: '{"message":"Hi!"}' }
 
-  const hello = await client.send('/hello', { name: 'Qore' });
+  const hello = await client.send('/hello', { name: 'Qore-QUIC' });
   console.log('Hello:', hello);
-  // → { message: 'Hello, Qore!' }
+  // → { message: 'Hello, Qore-QUIC!' }
 
   const users = await client.send('/users');
   console.log('Users:', users);
@@ -186,7 +186,7 @@ const client = new QoreClient(timeout?: number);
 
 | Method | Description |
 |--------|-------------|
-| `client.connect(host, port)` | Connect to a Qore server (Promise) |
+| `client.connect(host, port)` | Connect to a Qore-QUIC server (Promise) |
 | `client.send(route, data?)` | Send request and receive response (Promise) |
 | `client.close()` | Close the connection |
 
@@ -202,7 +202,7 @@ const client = new QoreClient(timeout?: number);
 
 ## How It Works
 
-Qore uses a simple binary frame protocol over QUIC streams:
+Qore-QUIC uses a simple binary frame protocol over QUIC streams:
 
 ```
 ┌──────────────────┬────────────────┬──────────────────┐
