@@ -29,11 +29,8 @@
     "binaryName": "qore-quic",
     "targets": [
       "x86_64-pc-windows-msvc",
-      "x86_64-apple-darwin",
       "x86_64-unknown-linux-gnu",
-      "aarch64-unknown-linux-gnu",
-      "aarch64-apple-darwin",
-      "aarch64-pc-windows-msvc"
+      "aarch64-apple-darwin"
     ]
   },
   "engines": {
@@ -61,10 +58,8 @@
   },
   "optionalDependencies": {
     "qore-quic-win32-x64-msvc": "1.0.7",
-    "qore-quic-darwin-arm64": "1.0.7",
-    "qore-quic-darwin-x64": "1.0.7",
     "qore-quic-linux-x64-gnu": "1.0.7",
-    "qore-quic-linux-arm64-gnu": "1.0.7"
+    "qore-quic-darwin-arm64": "1.0.7"
   },
   "prettier": {
     "printWidth": 120,

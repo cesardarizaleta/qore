@@ -23,12 +23,12 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          
+
       - name: Install dependencies
         run: npm ci
 
@@ -36,15 +36,36 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-      - name: Bump
+
+      - name: Bump version
         id: bump
         run: |
-          npm version patch --force -m "chore(release): %s"
-          NEW_VER=v$(node -p "require('./package.json').version")
-          git push origin main
-          git push origin $NEW_VER
-          echo "ver=$NEW_VER" >> $GITHUB_OUTPUT
+          # Bump version in package.json only (skip scripts to avoid napi version
+          # which needs npm/ sub-package dirs that don't exist in the repo)
+          npm version patch --no-git-tag-version --ignore-scripts
+          NEW_VER=$(node -p "require('./package.json').version")
+
+          # Sync optionalDependencies to the new version
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+            if (pkg.optionalDependencies) {
+              for (const key of Object.keys(pkg.optionalDependencies)) {
+                pkg.optionalDependencies[key] = pkg.version;
+              }
+            }
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+          # Clean up stale tag if it exists (from a failed prior run)
+          git push origin ":refs/tags/v${NEW_VER}" 2>/dev/null || true
+
+          # Commit, tag, and push
+          git add -A
+          git commit -m "chore(release): ${NEW_VER}"
+          git tag "v${NEW_VER}"
+          git push origin main --follow-tags
+          echo "ver=v${NEW_VER}" >> $GITHUB_OUTPUT
 
   build:
     needs: bump-version
@@ -53,16 +74,13 @@ jobs:
       matrix:
         settings:
           - host: windows-latest
-            build: npm run build --platform --release
             target: x86_64-pc-windows-msvc
           - host: macos-latest
-            build: npm run build --platform --release
             target: aarch64-apple-darwin
           - host: ubuntu-latest
-            build: npm run build --platform --release
             target: x86_64-unknown-linux-gnu
 
-    name: Build - ${{ matrix.settings.host }} - ${{ matrix.settings.target }}
+    name: Build - ${{ matrix.settings.target }}
     runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@v4
@@ -82,8 +100,8 @@ jobs:
         with:
           targets: ${{ matrix.settings.target }}
 
-      - name: Build
-        run: ${{ matrix.settings.build }}
+      - name: Build native binary
+        run: npx napi build --platform --release
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -118,12 +136,23 @@ jobs:
         with:
           path: artifacts
 
-      - name: Move artifacts
+      - name: Move artifacts to root
         run: |
           mv artifacts/bindings-*/*.node .
+          echo "Native bindings found:"
+          ls -la *.node
+
+      - name: Create platform sub-packages
+        run: npx napi prepublish -t npm --skip-gh-release
 
       - name: Publish platform sub-packages
-        run: npx napi prepublish -t npm --skip-gh-release
+        run: |
+          for dir in npm/*/; do
+            if [ -d "$dir" ]; then
+              echo "📦 Publishing $dir..."
+              (cd "$dir" && npm publish --access public) || true
+            fi
+          done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
