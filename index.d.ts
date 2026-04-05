@@ -8,7 +8,7 @@ export declare class QoreServerHandle {
   sendData(peer: string, streamId: number, data: Uint8Array): Promise<void>
 }
 
-export declare function connectToServer(host: string, port: number, callback: (err: Error | null, event: QoreEvent) => void): Promise<QoreClientHandle>
+export declare function connectToServer(host: string, port: number, callback: (event: QoreEvent) => void): Promise<QoreClientHandle>
 
 export interface QoreEvent {
   eventType: string
@@ -17,4 +17,4 @@ export interface QoreEvent {
   data?: Uint8Array
 }
 
-export declare function startServer(port: number, certPath: string, keyPath: string, callback: (err: Error | null, event: QoreEvent) => void): Promise<QoreServerHandle>
+export declare function startServer(port: number, certPath: string, keyPath: string, callback: (event: QoreEvent) => void): Promise<QoreServerHandle>

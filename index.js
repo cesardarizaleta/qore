@@ -70,15 +70,15 @@ function requireNative() {
   } else if (process.platform === 'android') {
     if (process.arch === 'arm64') {
       try {
-        return require('./..android-arm64.node')
+        return require('./qore-quic.android-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-android-arm64')
-        const bindingPackageVersion = require('qore-protocol-android-arm64/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-android-arm64')
+        const bindingPackageVersion = require('qore-quic-android-arm64/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -86,15 +86,15 @@ function requireNative() {
       }
     } else if (process.arch === 'arm') {
       try {
-        return require('./..android-arm-eabi.node')
+        return require('./qore-quic.android-arm-eabi.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-android-arm-eabi')
-        const bindingPackageVersion = require('qore-protocol-android-arm-eabi/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-android-arm-eabi')
+        const bindingPackageVersion = require('qore-quic-android-arm-eabi/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -107,15 +107,15 @@ function requireNative() {
     if (process.arch === 'x64') {
       if (process.config?.variables?.shlib_suffix === 'dll.a' || process.config?.variables?.node_target_type === 'shared_library') {
         try {
-        return require('./..win32-x64-gnu.node')
+        return require('./qore-quic.win32-x64-gnu.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-win32-x64-gnu')
-        const bindingPackageVersion = require('qore-protocol-win32-x64-gnu/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-win32-x64-gnu')
+        const bindingPackageVersion = require('qore-quic-win32-x64-gnu/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -123,15 +123,15 @@ function requireNative() {
       }
       } else {
         try {
-        return require('./..win32-x64-msvc.node')
+        return require('./qore-quic.win32-x64-msvc.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-win32-x64-msvc')
-        const bindingPackageVersion = require('qore-protocol-win32-x64-msvc/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-win32-x64-msvc')
+        const bindingPackageVersion = require('qore-quic-win32-x64-msvc/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -140,15 +140,15 @@ function requireNative() {
       }
     } else if (process.arch === 'ia32') {
       try {
-        return require('./..win32-ia32-msvc.node')
+        return require('./qore-quic.win32-ia32-msvc.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-win32-ia32-msvc')
-        const bindingPackageVersion = require('qore-protocol-win32-ia32-msvc/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-win32-ia32-msvc')
+        const bindingPackageVersion = require('qore-quic-win32-ia32-msvc/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -156,15 +156,15 @@ function requireNative() {
       }
     } else if (process.arch === 'arm64') {
       try {
-        return require('./..win32-arm64-msvc.node')
+        return require('./qore-quic.win32-arm64-msvc.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-win32-arm64-msvc')
-        const bindingPackageVersion = require('qore-protocol-win32-arm64-msvc/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-win32-arm64-msvc')
+        const bindingPackageVersion = require('qore-quic-win32-arm64-msvc/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -175,15 +175,15 @@ function requireNative() {
     }
   } else if (process.platform === 'darwin') {
     try {
-      return require('./..darwin-universal.node')
+      return require('./qore-quic.darwin-universal.node')
     } catch (e) {
       loadErrors.push(e)
     }
     try {
-      const binding = require('qore-protocol-darwin-universal')
-      const bindingPackageVersion = require('qore-protocol-darwin-universal/package.json').version
-      if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-        throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+      const binding = require('qore-quic-darwin-universal')
+      const bindingPackageVersion = require('qore-quic-darwin-universal/package.json').version
+      if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+        throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
       }
       return binding
     } catch (e) {
@@ -191,15 +191,15 @@ function requireNative() {
     }
     if (process.arch === 'x64') {
       try {
-        return require('./..darwin-x64.node')
+        return require('./qore-quic.darwin-x64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-darwin-x64')
-        const bindingPackageVersion = require('qore-protocol-darwin-x64/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-darwin-x64')
+        const bindingPackageVersion = require('qore-quic-darwin-x64/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -207,15 +207,15 @@ function requireNative() {
       }
     } else if (process.arch === 'arm64') {
       try {
-        return require('./..darwin-arm64.node')
+        return require('./qore-quic.darwin-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-darwin-arm64')
-        const bindingPackageVersion = require('qore-protocol-darwin-arm64/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-darwin-arm64')
+        const bindingPackageVersion = require('qore-quic-darwin-arm64/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -227,15 +227,15 @@ function requireNative() {
   } else if (process.platform === 'freebsd') {
     if (process.arch === 'x64') {
       try {
-        return require('./..freebsd-x64.node')
+        return require('./qore-quic.freebsd-x64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-freebsd-x64')
-        const bindingPackageVersion = require('qore-protocol-freebsd-x64/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-freebsd-x64')
+        const bindingPackageVersion = require('qore-quic-freebsd-x64/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -243,15 +243,15 @@ function requireNative() {
       }
     } else if (process.arch === 'arm64') {
       try {
-        return require('./..freebsd-arm64.node')
+        return require('./qore-quic.freebsd-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-freebsd-arm64')
-        const bindingPackageVersion = require('qore-protocol-freebsd-arm64/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-freebsd-arm64')
+        const bindingPackageVersion = require('qore-quic-freebsd-arm64/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -264,15 +264,15 @@ function requireNative() {
     if (process.arch === 'x64') {
       if (isMusl()) {
         try {
-          return require('./..linux-x64-musl.node')
+          return require('./qore-quic.linux-x64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('qore-protocol-linux-x64-musl')
-          const bindingPackageVersion = require('qore-protocol-linux-x64-musl/package.json').version
-          if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          const binding = require('qore-quic-linux-x64-musl')
+          const bindingPackageVersion = require('qore-quic-linux-x64-musl/package.json').version
+          if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -280,15 +280,15 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./..linux-x64-gnu.node')
+          return require('./qore-quic.linux-x64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('qore-protocol-linux-x64-gnu')
-          const bindingPackageVersion = require('qore-protocol-linux-x64-gnu/package.json').version
-          if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          const binding = require('qore-quic-linux-x64-gnu')
+          const bindingPackageVersion = require('qore-quic-linux-x64-gnu/package.json').version
+          if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -298,15 +298,15 @@ function requireNative() {
     } else if (process.arch === 'arm64') {
       if (isMusl()) {
         try {
-          return require('./..linux-arm64-musl.node')
+          return require('./qore-quic.linux-arm64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('qore-protocol-linux-arm64-musl')
-          const bindingPackageVersion = require('qore-protocol-linux-arm64-musl/package.json').version
-          if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          const binding = require('qore-quic-linux-arm64-musl')
+          const bindingPackageVersion = require('qore-quic-linux-arm64-musl/package.json').version
+          if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -314,15 +314,15 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./..linux-arm64-gnu.node')
+          return require('./qore-quic.linux-arm64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('qore-protocol-linux-arm64-gnu')
-          const bindingPackageVersion = require('qore-protocol-linux-arm64-gnu/package.json').version
-          if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          const binding = require('qore-quic-linux-arm64-gnu')
+          const bindingPackageVersion = require('qore-quic-linux-arm64-gnu/package.json').version
+          if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -332,15 +332,15 @@ function requireNative() {
     } else if (process.arch === 'arm') {
       if (isMusl()) {
         try {
-          return require('./..linux-arm-musleabihf.node')
+          return require('./qore-quic.linux-arm-musleabihf.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('qore-protocol-linux-arm-musleabihf')
-          const bindingPackageVersion = require('qore-protocol-linux-arm-musleabihf/package.json').version
-          if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          const binding = require('qore-quic-linux-arm-musleabihf')
+          const bindingPackageVersion = require('qore-quic-linux-arm-musleabihf/package.json').version
+          if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -348,15 +348,15 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./..linux-arm-gnueabihf.node')
+          return require('./qore-quic.linux-arm-gnueabihf.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('qore-protocol-linux-arm-gnueabihf')
-          const bindingPackageVersion = require('qore-protocol-linux-arm-gnueabihf/package.json').version
-          if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          const binding = require('qore-quic-linux-arm-gnueabihf')
+          const bindingPackageVersion = require('qore-quic-linux-arm-gnueabihf/package.json').version
+          if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -366,15 +366,15 @@ function requireNative() {
     } else if (process.arch === 'loong64') {
       if (isMusl()) {
         try {
-          return require('./..linux-loong64-musl.node')
+          return require('./qore-quic.linux-loong64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('qore-protocol-linux-loong64-musl')
-          const bindingPackageVersion = require('qore-protocol-linux-loong64-musl/package.json').version
-          if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          const binding = require('qore-quic-linux-loong64-musl')
+          const bindingPackageVersion = require('qore-quic-linux-loong64-musl/package.json').version
+          if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -382,15 +382,15 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./..linux-loong64-gnu.node')
+          return require('./qore-quic.linux-loong64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('qore-protocol-linux-loong64-gnu')
-          const bindingPackageVersion = require('qore-protocol-linux-loong64-gnu/package.json').version
-          if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          const binding = require('qore-quic-linux-loong64-gnu')
+          const bindingPackageVersion = require('qore-quic-linux-loong64-gnu/package.json').version
+          if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -400,15 +400,15 @@ function requireNative() {
     } else if (process.arch === 'riscv64') {
       if (isMusl()) {
         try {
-          return require('./..linux-riscv64-musl.node')
+          return require('./qore-quic.linux-riscv64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('qore-protocol-linux-riscv64-musl')
-          const bindingPackageVersion = require('qore-protocol-linux-riscv64-musl/package.json').version
-          if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          const binding = require('qore-quic-linux-riscv64-musl')
+          const bindingPackageVersion = require('qore-quic-linux-riscv64-musl/package.json').version
+          if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -416,15 +416,15 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./..linux-riscv64-gnu.node')
+          return require('./qore-quic.linux-riscv64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
         try {
-          const binding = require('qore-protocol-linux-riscv64-gnu')
-          const bindingPackageVersion = require('qore-protocol-linux-riscv64-gnu/package.json').version
-          if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          const binding = require('qore-quic-linux-riscv64-gnu')
+          const bindingPackageVersion = require('qore-quic-linux-riscv64-gnu/package.json').version
+          if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -433,15 +433,15 @@ function requireNative() {
       }
     } else if (process.arch === 'ppc64') {
       try {
-        return require('./..linux-ppc64-gnu.node')
+        return require('./qore-quic.linux-ppc64-gnu.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-linux-ppc64-gnu')
-        const bindingPackageVersion = require('qore-protocol-linux-ppc64-gnu/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-linux-ppc64-gnu')
+        const bindingPackageVersion = require('qore-quic-linux-ppc64-gnu/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -449,15 +449,15 @@ function requireNative() {
       }
     } else if (process.arch === 's390x') {
       try {
-        return require('./..linux-s390x-gnu.node')
+        return require('./qore-quic.linux-s390x-gnu.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-linux-s390x-gnu')
-        const bindingPackageVersion = require('qore-protocol-linux-s390x-gnu/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-linux-s390x-gnu')
+        const bindingPackageVersion = require('qore-quic-linux-s390x-gnu/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -469,15 +469,15 @@ function requireNative() {
   } else if (process.platform === 'openharmony') {
     if (process.arch === 'arm64') {
       try {
-        return require('./..openharmony-arm64.node')
+        return require('./qore-quic.openharmony-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-openharmony-arm64')
-        const bindingPackageVersion = require('qore-protocol-openharmony-arm64/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-openharmony-arm64')
+        const bindingPackageVersion = require('qore-quic-openharmony-arm64/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -485,15 +485,15 @@ function requireNative() {
       }
     } else if (process.arch === 'x64') {
       try {
-        return require('./..openharmony-x64.node')
+        return require('./qore-quic.openharmony-x64.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-openharmony-x64')
-        const bindingPackageVersion = require('qore-protocol-openharmony-x64/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-openharmony-x64')
+        const bindingPackageVersion = require('qore-quic-openharmony-x64/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -501,15 +501,15 @@ function requireNative() {
       }
     } else if (process.arch === 'arm') {
       try {
-        return require('./..openharmony-arm.node')
+        return require('./qore-quic.openharmony-arm.node')
       } catch (e) {
         loadErrors.push(e)
       }
       try {
-        const binding = require('qore-protocol-openharmony-arm')
-        const bindingPackageVersion = require('qore-protocol-openharmony-arm/package.json').version
-        if (bindingPackageVersion !== '1.0.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        const binding = require('qore-quic-openharmony-arm')
+        const bindingPackageVersion = require('qore-quic-openharmony-arm/package.json').version
+        if (bindingPackageVersion !== '1.0.7' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.7 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -529,7 +529,7 @@ if (!nativeBinding || process.env.NAPI_RS_FORCE_WASI) {
   let wasiBinding = null
   let wasiBindingError = null
   try {
-    wasiBinding = require('./..wasi.cjs')
+    wasiBinding = require('./qore-quic.wasi.cjs')
     nativeBinding = wasiBinding
   } catch (err) {
     if (process.env.NAPI_RS_FORCE_WASI) {
@@ -538,7 +538,7 @@ if (!nativeBinding || process.env.NAPI_RS_FORCE_WASI) {
   }
   if (!nativeBinding || process.env.NAPI_RS_FORCE_WASI) {
     try {
-      wasiBinding = require('qore-protocol-wasm32-wasi')
+      wasiBinding = require('qore-quic-wasm32-wasi')
       nativeBinding = wasiBinding
     } catch (err) {
       if (process.env.NAPI_RS_FORCE_WASI) {
