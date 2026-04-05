@@ -122,9 +122,16 @@ jobs:
         run: |
           mv artifacts/bindings-*/*.node .
 
-      - name: Publish to NPM
-        run: |
-          npm publish --access public
+      - name: Publish platform sub-packages
+        run: npx napi prepublish -t npm --skip-gh-release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Build TypeScript (generate dist/)
+        run: node scripts/fix-types.js && npx tsc
+
+      - name: Publish main package to NPM
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

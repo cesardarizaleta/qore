@@ -1,6 +1,6 @@
 {
   "name": "qore-quic",
-  "version": "1.0.8",
+  "version": "1.0.7",
   "description": "High-performance Express-style API framework over QUIC protocol. Built with Rust + Node.js for ultra-fast communication.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -58,6 +58,13 @@
   },
   "dependencies": {
     "selfsigned": "^2.4.1"
+  },
+  "optionalDependencies": {
+    "qore-quic-win32-x64-msvc": "1.0.7",
+    "qore-quic-darwin-arm64": "1.0.7",
+    "qore-quic-darwin-x64": "1.0.7",
+    "qore-quic-linux-x64-gnu": "1.0.7",
+    "qore-quic-linux-arm64-gnu": "1.0.7"
   },
   "prettier": {
     "printWidth": 120,
